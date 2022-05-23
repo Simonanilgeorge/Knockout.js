@@ -16,9 +16,10 @@ function MyCartModel() {
 
   // function to remove item from cart
   this.removeFromCart = (index, product) => {
+    console.log(product)
     $.ajax({
       type: "DELETE",
-      url: `http://localhost:5000/api/cart/${index()}`,
+      url: `http://localhost:5000/api/cart/${product.id}`,
       success: (result) => {
         // if item is successfully deleted from cart; then remove it from the local array
         this.cart.splice(index(), 1);
