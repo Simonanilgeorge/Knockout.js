@@ -1,6 +1,20 @@
 function MyCartModel() {
+
+  if (!sessionStorage.getItem("token")) {
+    window.location.href = "./login.html";
+  }
+
   this.cart = ko.observableArray([]);
   this.total = ko.observable(0);
+
+
+
+  // set headers for ajax request
+  $.ajaxSetup({
+    headers: {
+      Authorization: `Bearer ${sessionStorage.getItem("token")}`,
+    },
+  });
 
   // function to get items from cart
   $.getJSON("http://localhost:5000/api/cart", (data) => {
@@ -16,7 +30,7 @@ function MyCartModel() {
 
   // function to remove item from cart
   this.removeFromCart = (index, product) => {
-    console.log(product)
+    console.log(product);
     $.ajax({
       type: "DELETE",
       url: `http://localhost:5000/api/cart/${product.id}`,
@@ -24,7 +38,11 @@ function MyCartModel() {
         // if item is successfully deleted from cart; then remove it from the local array
         this.cart.splice(index(), 1);
         if (this.cart().length != 0) {
-          this.total(this.cart().map((data) => data.price).reduce((a, b) => a + b));
+          this.total(
+            this.cart()
+              .map((data) => data.price)
+              .reduce((a, b) => a + b)
+          );
         } else {
           this.total(0);
         }
@@ -35,6 +53,11 @@ function MyCartModel() {
       },
     });
   };
+
+  this.logout=()=>{
+    sessionStorage.clear()
+    window.location.href="./login.html"
+  }
 }
 
 ko.applyBindings(new MyCartModel());
